@@ -166,15 +166,15 @@ def segment_image(img,prompt_mode, categoryname, custom_category, expressiong, r
             # prompt_list = [mask_ori[0]]
             prompt_list = []
             with torch.no_grad():
-                (outputs,_) = GLEEmodel(infer_image, prompt_list, task="coco", batch_name_list=batch_category_name, is_train=False)
+                outputs = GLEEmodel(infer_image, prompt_list, task="coco", batch_name_list=batch_category_name, is_train=False)
             topK_instance = max(num_inst_select,1)
         else:
             topK_instance = 1
             prompt_list = {'grounding':[expressiong]}
             with torch.no_grad():
-                (outputs,_) = GLEEmodel(infer_image, prompt_list, task="grounding", batch_name_list=[], is_train=False)
+                outputs = GLEEmodel(infer_image, prompt_list, task="grounding", batch_name_list=[], is_train=False)
 
-
+        outputs = outputs[0][0]
         mask_pred = outputs['pred_masks'][0]
         mask_cls = outputs['pred_logits'][0]
         boxes_pred = outputs['pred_boxes'][0]
@@ -309,8 +309,9 @@ def segment_image(img,prompt_mode, categoryname, custom_category, expressiong, r
             prompt_list = {'spatial':[visual_prompt]}
 
             with torch.no_grad():
-                (outputs,_) = GLEEmodel(infer_image, prompt_list, task="coco", batch_name_list=['object'], is_train=False, visual_prompt_type=prompt_mode )
+                outputs = GLEEmodel(infer_image, prompt_list, task="coco", batch_name_list=['object'], is_train=False, visual_prompt_type=prompt_mode )
 
+            outputs = outputs[0][0]
             mask_pred = outputs['pred_masks'][0]
             mask_cls = outputs['pred_logits'][0]
             boxes_pred = outputs['pred_boxes'][0]
